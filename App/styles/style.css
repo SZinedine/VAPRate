@@ -1,0 +1,112 @@
+:root {
+    --buttons-background-color: transparent;
+    --buttons-border-background-color: #6e6e6e;
+    --buttons-border-background-color-hover: var(--buttons-border-background-color);
+    --buttons-background-color-hover: var(--buttons-border-background-color);
+}
+
+body {
+    width: 200px;
+    height: 110px;
+}
+
+#first-stage {
+    position: relative;
+    left: 10px;
+}
+
+#plus-minus-div {
+    float: left;
+    width: 60px;
+}
+
+#label {
+    font-size: 50px;
+}
+
+.control-buttons {
+    background-color: var(--buttons-background-color);
+    border-radius: 15%;
+    padding: 10%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: transparent;
+}
+
+#plus, #minus {
+    border: none;
+    width: 50px;
+    height: 30px;
+    background-position: center;
+}
+
+#plus {
+    background-image: url(../images/buttons/up.png);
+}
+
+#minus {
+    background-image: url(../images/buttons/down.png);
+}
+
+#plus:hover {
+    background-image: url(../images/buttons/up_hover.png);
+}
+
+#minus:hover {
+    background-image: url(../images/buttons/down_hover.png);
+}
+
+#plus:active {
+    background-image: url(../images/buttons/up_active.png);
+}
+
+#minus:active {
+    background-image: url(../images/buttons/down_active.png);
+}
+
+#plus:disabled {
+    background-image: url(../images/buttons/up_disabled.png);
+}
+
+#minus:disabled {
+    background-image: url(../images/buttons/down_disabled.png);
+}
+
+#label-container {
+    position: relative;
+    left: 30px;
+}
+
+#reset {
+    position: relative;
+    left: 20px;
+    top: 10px;
+    padding: 6px 60px;
+    border-radius: 8px;
+    background-color: transparent;
+    color: black;
+    border: 2px solid grey;
+    transition-duration: 0.4s;
+}
+
+#reset:hover {
+    background-color: grey;
+    color: white;
+}
+
+#reset:active {
+    background-color: rgb(167, 167, 167);
+    color: black;
+}
+
+#reset:disabled {
+    
+}
+
+#plus:focus, #minus:focus, #reset:focus {
+    outline:0;
+}
+
+#error-area {
+    color: red;
+}

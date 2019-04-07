@@ -1,0 +1,43 @@
+{
+    "manifest_version": 2,
+    "name": "Youtube Playback Speed",
+    "author": "Zineddine SAIBI",
+    "version": "0.1",
+    "description": "speed up or slow down the play rate of Youtube videos.",
+    
+    "browser_specific_settings": {
+    "gecko": {
+      "id": "addon@example.com",
+      "strict_min_version": "42.0"
+    }
+  },
+
+    "icons": {
+        "32": "images/icons/32.png",
+        "64": "images/icons/64.png",
+        "96": "images/icons/96.png",
+        "128": "images/icons/128.png",
+        "256": "images/icons/256.png",
+        "512": "images/icons/512.png"
+    },
+
+    "content_scripts": [
+        {
+            "matches":
+            [
+                "*://*.youtube.com/*"
+            ],
+            "js": ["scripts/content.js"]
+        }
+    ],
+
+    "browser_action": {
+        "default_icon": "images/icons/icon.png",
+        "default_popup": "index.html"
+    },
+
+    "permissions": [
+        "tabs",
+        "activeTab"
+    ]
+}
