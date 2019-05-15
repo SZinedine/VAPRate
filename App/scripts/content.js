@@ -1,6 +1,3 @@
-var url = document.baseURI;
-var video = document.querySelector('video');
-
 /**
  * receive a message from the outside (popup.js)
  */
@@ -14,7 +11,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
         sendResponse( getCurrentPlayRate() );
     }
     else if (response.action == "get url") {
-        sendResponse( url );
+        sendResponse( document.baseURI );
     }
     else {
         let msg = "content.js: something went wrong";
@@ -30,6 +27,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
  * @returns {nummber}
  */
 function getCurrentPlayRate() {
+    let video = document.querySelector('video');
     return video.playbackRate;
 }
 
@@ -39,5 +37,6 @@ function getCurrentPlayRate() {
  * @param {nummber} value   the value to set
  */
 function setPlayRate(value) {
+    let video = document.querySelector('video');
     video.playbackRate = value;
 }
