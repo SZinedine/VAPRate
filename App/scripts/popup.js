@@ -1,31 +1,18 @@
+const jumpValue = 0.25;
 const plusButton = document.querySelector("#plus");
 const minusButton = document.querySelector("#minus");
 const resetButton = document.querySelector("#reset");
 const label = document.querySelector("#label");
-let jumpValue = 0.25;
 
 /**
  * called when the popup button is clicked
  * set the popup UI according to the current tab.
  */
-document.addEventListener('DOMContentLoaded', function() {
-    // verify if we are on youtube
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {action: "get url"}, function(response){
-            var reg = /^(http(s)?:\/\/)?((w){3}.)?youtube(\.com)?\/.+/;
-            var result = reg.test(response);    // test the URL against the regex
+document.addEventListener('DOMContentLoaded', () => {
 
-            if (result) // if the current URL is youtube
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {action:"get speed"}, function(response){
-                        changeLabelValue(response);
-                    });
-                });
-            else {
-                changeLabelValue(0);
-                disableUI();
-                printError();
-            }
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {action:"GET"}, function(response){
+            changeLabelValue(response);
         });
     });
 });
@@ -40,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function changeSpeed(spd) {     // recieving a float
     let toSend = {
-        action:"set speed",
+        action:"SET",
         speed: spd
     };
 
@@ -53,7 +40,7 @@ function changeSpeed(spd) {     // recieving a float
 }
 
 
-/****** EVENT LISTNER O BUTTONS ******/
+/****** event listners for buttons ******/
 plusButton.addEventListener("click", function() {
     changeSpeed( getLabelValue() + jumpValue );
 });
@@ -98,7 +85,7 @@ function printError() {
  */
 function getCurrent() {
     let obj = {
-        action: "get speed"
+        action: "GET"
     };
     chrome.runtime.sendMessage(obj, function(msg) {
         return msg;

@@ -1,17 +1,35 @@
+
+var rate = 1;
+var repeat = window.setInterval(applyPlaybackRate, 2000);
+
+/**
+ * set the playback rate for all videos of the current page
+ */
+function applyPlaybackRate() {
+    console.log("rate: " + rate);
+    for (let video in document.querySelectorAll('video'))
+        video.playbackRate = rate;
+}
+
+/**
+ * check if there is videos on the current page
+ */
+function pageHasVideos() {
+    return document.querySelectorAll('video').length != 0;
+}
+
+
 /**
  * receive a message from the outside (popup.js)
  */
-chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
-    
-    if (response.action == "set speed") {
-        setPlayRate(response.speed);
+chrome.runtime.onMessage.addListener( (response, sender, sendResponse) => {
+
+    if (response.action == "SET") {
+        rate = response.speed;
         sendResponse( {result: "succeed"} );
     }
-    else if (response.action == "get speed") {
-        sendResponse( getCurrentPlayRate() );
-    }
-    else if (response.action == "get url") {
-        sendResponse( document.baseURI );
+    else if (response.action == "GET") {
+        sendResponse( rate );
     }
     else {
         let msg = "content.js: something went wrong";
@@ -20,23 +38,3 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
         alert(msg);
     }
 });
-
-/**
- * get the current playback rate from the video and return it
- * 
- * @returns {nummber}
- */
-function getCurrentPlayRate() {
-    let video = document.querySelector('video');
-    return video.playbackRate;
-}
-
-/**
- * set the playback rate
- * 
- * @param {nummber} value   the value to set
- */
-function setPlayRate(value) {
-    let video = document.querySelector('video');
-    video.playbackRate = value;
-}

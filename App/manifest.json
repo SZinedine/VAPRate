@@ -4,13 +4,6 @@
     "author": "Zineddine SAIBI",
     "version": "0.1",
     "description": "speed up or slow down the play rate of Youtube videos.",
-    
-    "browser_specific_settings": {
-    "gecko": {
-      "id": "addon@example.com",
-      "strict_min_version": "42.0"
-    }
-  },
 
     "icons": {
         "32": "images/icons/32.png",
@@ -25,7 +18,7 @@
         {
             "matches":
             [
-                "*://*.youtube.com/*"
+                "<all_urls>"
             ],
             "js": ["scripts/content.js"]
         }
@@ -38,6 +31,7 @@
 
     "permissions": [
         "tabs",
+        "<all_urls>",
         "activeTab"
     ]
 }
