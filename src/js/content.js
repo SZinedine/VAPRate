@@ -1,7 +1,7 @@
 
 var rate = 1;
 recoverStoredPlaybackRate();
-var repeat = window.setInterval(applyPlaybackRate, 2000);
+var repeat = setInterval(applyPlaybackRate, 2000);
 
 /**
  * store rate in extension storage and apply the same value to the global variable `rate`
@@ -9,6 +9,7 @@ var repeat = window.setInterval(applyPlaybackRate, 2000);
 function setPlaybackRateValue(rate_) {
     rate = rate_;
     chrome.storage.sync.set({ "playbackRate": rate_ });
+    applyPlaybackRate();
 }
 
 
