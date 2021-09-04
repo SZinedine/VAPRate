@@ -2,12 +2,24 @@
 var rate = 1;
 var repeat = window.setInterval(applyPlaybackRate, 2000);
 
+
+window.addEventListener("keydown", function(event) {
+    if (event.shiftKey) {
+        if (event.code == "Comma")
+            rate = rate + 0.25;
+        else if (event.code == "KeyM")
+            if (rate >= 0.5)
+                rate = rate - 0.25;
+    }
+});
+
+
 /**
  * set the playback rate for all videos of the current page
  */
 function applyPlaybackRate() {
     console.log("rate: " + rate);
-    for (let video in document.querySelectorAll('video'))
+    for (let video of document.querySelectorAll('video'))
         video.playbackRate = rate;
 }
 
