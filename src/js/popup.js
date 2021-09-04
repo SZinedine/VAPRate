@@ -4,6 +4,7 @@ const minusButton = document.querySelector("#minus");
 const resetButton = document.querySelector("#reset");
 const label = document.querySelector("#label");
 
+
 /**
  * display the current playback rate in the popup
  */
@@ -34,7 +35,24 @@ function changePlaybackRate(spd) {     // spd should be a float
 }
 
 
-/****** event listners for buttons ******/
+/**
+ * Match the Youtube keyboard shortcuts
+ */
+window.addEventListener("keydown", function(event) {
+    if (event.shiftKey) {
+        let cur = getLabelValue();
+        if (event.code == "Comma")
+            changePlaybackRate( cur + jumpValue );
+        else if (event.code == "KeyM")
+            if (cur >= 0.5)
+                changePlaybackRate( cur - jumpValue );
+    }
+});
+
+
+/*
+ * event listners for buttons
+ */
 plusButton.addEventListener("click", function() {
     changePlaybackRate( getLabelValue() + jumpValue );
 });
@@ -47,6 +65,18 @@ minusButton.addEventListener("click", function() {
 
 resetButton.addEventListener("click", function() {
     changePlaybackRate( 1 );
+});
+
+
+/**
+ * focus on the buttons when hovered
+ */
+plusButton.addEventListener("mouseover", function() {
+    plusButton.focus();
+});
+
+minusButton.addEventListener("mouseover", function() {
+    minusButton.focus();
 });
 
 
