@@ -5,27 +5,21 @@ const resetButton = document.querySelector("#reset");
 const label = document.querySelector("#label");
 
 /**
- * called when the popup button is clicked
- * set the popup UI according to the current tab.
+ * display the current playback rate in the popup
  */
 document.addEventListener('DOMContentLoaded', () => {
 
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {action:"GET"}, function(response){
-            changeLabelValue(response);
+
+            let res = (response == undefined) ? "/" : response;
+            changeLabelValue(res);
         });
     });
 });
 
 
-/**
- * change the speed of the video
- * by contacting content.js and give it the blaybackrate to set
- * receive a "succeed" string from it
- * then call ChangeLabelValue() to change the speed value in the popup
- * @param {number} spd 
- */
-function changeSpeed(spd) {     // recieving a float
+function changePlaybackRate(spd) {     // spd should be a float
     let toSend = {
         action:"SET",
         speed: spd
@@ -42,24 +36,24 @@ function changeSpeed(spd) {     // recieving a float
 
 /****** event listners for buttons ******/
 plusButton.addEventListener("click", function() {
-    changeSpeed( getLabelValue() + jumpValue );
+    changePlaybackRate( getLabelValue() + jumpValue );
 });
 
 minusButton.addEventListener("click", function() {
     let cur = getLabelValue();
     if (cur > 0.25)
-        changeSpeed( cur - jumpValue );
+        changePlaybackRate( cur - jumpValue );
 });
 
 resetButton.addEventListener("click", function() {
-    changeSpeed( 1 );
+    changePlaybackRate( 1 );
 });
 
 
 /**
  * log the results inside the popup for debugging purposes
  * think of uncomenting the #log div in the html file before using this function
- * @param {String} content 
+ * @param {String} content
  */
 function addToList(content) {
     let ul = document.querySelector("#log");
@@ -67,6 +61,8 @@ function addToList(content) {
     li.textContent = content;
     ul.appendChild(li);
 }
+
+
 /**
  * print an error inside the popup in case the youtube page isn't loaded
  * or the current website isn't youtube
@@ -78,9 +74,10 @@ function printError() {
     obj.appendChild(p);
 }
 
+
 /**
  * call content.js to get the current playbackrate of the video
- * 
+ *
  * @returns {number} playbackrate
  */
 function getCurrent() {
@@ -95,24 +92,23 @@ function getCurrent() {
 
 /**
  * change the value of the label inside the popup
- * 
- * @param {number} speed 
  */
-function changeLabelValue(speed) {
-    label.innerHTML = speed;
+function changeLabelValue(rate) {
+    label.innerText = rate;
 }
 
 
-/** 
+/**
  * get the value of the label inside the popup
  * @returns {number} the content of the label
  */
 function getLabelValue() {
-    return parseFloat(label.innerHTML);
+    return parseFloat(label.innerText);
 }
 
+
 /**
- * disables the buttons and modify their colors
+ * disable the buttons and change their colors
  */
 function disableUI() {
     plusButton.disabled = true;
@@ -120,3 +116,4 @@ function disableUI() {
     resetButton.disabled = true;
     label.style.color = "grey";
 }
+
