@@ -1,3 +1,4 @@
+"use strict";
 
 var rate = 1;
 recoverStoredPlaybackRate();
@@ -31,17 +32,21 @@ function recoverStoredPlaybackRate() {
 
 
 /**
- * Match the Youtube keyboard shortcuts
+ * keyboard shortcuts
+ * Ctrl button along with arrow buttons
+ * are used to increate and decrease playback rate
  */
-window.addEventListener("keydown", function(event) {
-    if (event.shiftKey) {
-        if (event.code == "Comma")
-            setPlaybackRateValue(rate + 0.25)
-        else if (event.code == "KeyM")
+document.onkeydown = (event) => {
+    if (event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
+        if (event.key == "ArrowUp") {
+            setPlaybackRateValue(rate + 0.25);
+        }
+        else if (event.key == "ArrowDown") {
             if (rate >= 0.5)
-                setPlaybackRateValue(rate - 0.25)
+                setPlaybackRateValue(rate - 0.25);
+        }
     }
-});
+};
 
 
 /**

@@ -1,9 +1,10 @@
+"use strict";
+
 const jumpValue = 0.25;
 const plusButton = document.querySelector("#plus");
 const minusButton = document.querySelector("#minus");
 const resetButton = document.querySelector("#reset");
 const label = document.querySelector("#label");
-
 
 /**
  * display the current playback rate in the popup
@@ -34,23 +35,24 @@ function changePlaybackRate(spd) {     // spd should be a float
     });
 }
 
-
 /**
- * Match the Youtube keyboard shortcuts
+ * Keyboard shortcuts
  */
-addEventListener("keydown", function(event) {
-    if (event.shiftKey) {
+document.onkeydown = (event) => {
+    if (event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
         let cur = getLabelValue();
-        if (event.code == "Comma")
+        if (event.key == "ArrowUp") {
             changePlaybackRate( cur + jumpValue );
-        else if (event.code == "KeyM")
+        }
+        else if (event.key == "ArrowDown") {
             if (cur >= 0.5)
                 changePlaybackRate( cur - jumpValue );
+        }
     }
-});
+};
 
 
-/*
+/**
  * event listners for buttons
  */
 plusButton.onclick = () => {
