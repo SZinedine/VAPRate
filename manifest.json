@@ -23,6 +23,10 @@
             "js": ["src/js/content.js"]
         }
     ],
+    "background": {
+      "scripts": ["src/js/background.js"],
+      "persistent": false
+    },
 
     "browser_action": {
         "default_icon": "icon/icon.png",

@@ -60,6 +60,12 @@ function applyPlaybackRate() {
 
     for (let audio of document.querySelectorAll('audio'))
         audio.playbackRate = rate;
+
+    // send a message to the background script in order to change the badge number on the icon
+    chrome.runtime.sendMessage({
+        "action": "change_badge_number",
+        "rate": rate
+    });
 }
 
 
