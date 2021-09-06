@@ -1,82 +1,110 @@
 "use strict";
 
-var rate = 1;
-recoverStoredPlaybackRate();
-var repeat = setInterval(applyPlaybackRate, 2000);
+var currentRate = null;     // for easy access
+var interval = null;
+applyPlaybackRate();
+startInterval();
+
 
 /**
- * store rate in extension storage and apply the same value to the global variable `rate`
+ * Apply the playback rate every 2 seconds
  */
-function setPlaybackRateValue(rate_) {
-    rate = rate_;
-    chrome.storage.sync.set({ "playbackRate": rate_ });
-    applyPlaybackRate();
+function startInterval() {
+    if (!interval)
+        interval = setInterval( applyPlaybackRate , 2000 );
+}
+
+
+function stopInterval() {
+    if (interval)
+        clearInterval(interval);
+    interval = null;
 }
 
 
 /**
- * recover rate from extension storage
+ * store the playback rate in the extension storage for persistency
  */
-function recoverStoredPlaybackRate() {
-    try {
-        chrome.storage.sync.get(["playbackRate"], function(item){
+function setRate(rate) {
+    chrome.storage.sync.set({ "playbackRate": rate });
+    currentRate = currentRate;
+}
+
+
+/**
+ * fetch the stored playback rate from the extension storage
+ * returns a promise
+ */
+function getRate() {
+    return new Promise( (resolve, reject) => {
+        chrome.storage.sync.get(["playbackRate"], function(item) {
             if (item.playbackRate == undefined)
-                rate = 1;
-            else rate = item.playbackRate;
+                reject(1);
+            else resolve(item.playbackRate);
+        })
+    });
+}
+
+
+/**
+ * Set the video/audio elements to the stored playback rate.
+ * it sends a message to the service worker to display the new rate in a badge
+ */
+function applyPlaybackRate() {
+    function apply(rate) {
+        for (let video of document.querySelectorAll('video'))
+            video.playbackRate = rate;
+
+        for (let audio of document.querySelectorAll('audio'))
+            audio.playbackRate = rate;
+
+        // send it to background
+        chrome.runtime.sendMessage({
+            "action": "change_badge_number",
+            "rate": rate
         });
-    } catch (err) { // nonexistent key may cause an exception
-        console.log("Error while recovering the stored playback rate. set it to 1.")
-        setPlaybackRateValue(1);
+
+        currentRate = rate;
     }
+    getRate()
+    .then(  rate => { apply(rate); } )
+    .catch( rate => { apply(rate); } );
 }
 
 
 /**
  * keyboard shortcuts
- * Ctrl button along with arrow buttons
- * are used to increate and decrease playback rate
+ * Ctrl + ArrowUp/ArrowDown to increase and decrease the rate
  */
-document.onkeydown = (event) => {
+document.onkeydown = event => {
     if (event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
         if (event.key == "ArrowUp") {
-            setPlaybackRateValue(rate + 0.25);
+            setRate(currentRate + 0.25);
+            applyPlaybackRate();
         }
         else if (event.key == "ArrowDown") {
-            if (rate >= 0.5)
-                setPlaybackRateValue(rate - 0.25);
+            if (currentRate >= 0.5) {
+                setRate(currentRate - 0.25);
+                applyPlaybackRate();
+            }
         }
     }
 };
 
 
 /**
- * set the playback rate for all video/audio elements of the current page
+ * Process Messages from the popup page/script
  */
-function applyPlaybackRate() {
-    recoverStoredPlaybackRate();
-    // console.log("rate: " + rate);    // for debug
-    for (let video of document.querySelectorAll('video'))
-        video.playbackRate = rate;
-
-    for (let audio of document.querySelectorAll('audio'))
-        audio.playbackRate = rate;
-
-    // send a message to the background script in order to change the badge number on the icon
-    chrome.runtime.sendMessage({
-        "action": "change_badge_number",
-        "rate": rate
-    });
-}
-
-
-chrome.runtime.onMessage.addListener( (response, sender, sendResponse) => {
-
-    if (response.action == "SET") {
-        setPlaybackRateValue( response.speed );
+function fromPopup(request, sender, sendResponse) {
+    if (request.action == "SET") {
+        stopInterval();
+        setRate( request.speed );
+        applyPlaybackRate()
+        startInterval();
         sendResponse( {result: "succeed"} );
     }
-    else if (response.action == "GET") {
-        sendResponse( rate );
+    else if (request.action == "GET") {
+        sendResponse(currentRate);
     }
     else {
         let msg = "content.js: something went wrong";
@@ -84,5 +112,6 @@ chrome.runtime.onMessage.addListener( (response, sender, sendResponse) => {
         sendResponse(msg);
         alert(msg);
     }
-});
+}
 
+chrome.runtime.onMessage.addListener(fromPopup);

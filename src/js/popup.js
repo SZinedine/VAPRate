@@ -6,39 +6,53 @@ const minusButton = document.querySelector("#minus");
 const resetButton = document.querySelector("#reset");
 const label = document.querySelector("#label");
 
+document.addEventListener('DOMContentLoaded', openPopup);   // wait until the page is loaded
+
 /**
- * display the current playback rate in the popup
+ * When the popup opens, get the current
+ * playback rate from content script and display it
  */
-document.addEventListener('DOMContentLoaded', () => {
+function openPopup() {
+    toContent({action: "GET"}, response => changeLabelValue(response));
+}
 
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {action:"GET"}, function(response){
 
-            let res = (response == undefined) ? "/" : response;
-            changeLabelValue(res);
-        });
+/**
+ * call the content script to apply the newly set rate
+ *
+ * @param {number} rate      // should be a float
+ */
+function changePlaybackRate(rate) {
+    toContent({action: "SET", speed: rate}, response => {
+        if (response.result == "succeed")
+            changeLabelValue(parseFloat(rate));
+        else
+            console.error("Something went wront while changing the playback rate.");
     });
-});
+}
 
 
-function changePlaybackRate(spd) {     // spd should be a float
-    let toSend = {
-        action:"SET",
-        speed: spd
-    };
-
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, toSend, function(response){
-            if (response.result === "succeed")
-                changeLabelValue(parseFloat(spd));
+/**
+ * Send a message to the content script
+ * pass the response to the callback function provided as a parameter
+ *
+ * @param {Object} message
+ * @param {function} callback
+ */
+function toContent(message, callback) {
+    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+        chrome.tabs.sendMessage(tabs[0].id, message, response => {
+            if (callback)
+                callback(response);
         });
     });
 }
 
+
 /**
  * Keyboard shortcuts
  */
-document.onkeydown = (event) => {
+document.onkeydown = event => {
     if (event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
         let cur = getLabelValue();
         if (event.key == "ArrowUp") {
@@ -53,7 +67,7 @@ document.onkeydown = (event) => {
 
 
 /**
- * event listners for buttons
+ * event listeners for buttons
  */
 plusButton.onclick = () => {
     changePlaybackRate( getLabelValue() + jumpValue );
@@ -92,33 +106,6 @@ function addToList(content) {
     let li = document.createElement("li");
     li.textContent = content;
     ul.appendChild(li);
-}
-
-
-/**
- * print an error inside the popup in case the youtube page isn't loaded
- * or the current website isn't youtube
- */
-function printError() {
-    let obj = document.querySelector("#error-area");
-    let p = document.createElement("p");
-    p.textContent = "Go to a youtube page, or wait for the page to load.";
-    obj.appendChild(p);
-}
-
-
-/**
- * call content.js to get the current playbackrate of the video
- *
- * @returns {number} playbackrate
- */
-function getCurrent() {
-    let obj = {
-        action: "GET"
-    };
-    chrome.runtime.sendMessage(obj, function(msg) {
-        return msg;
-    });
 }
 
 
