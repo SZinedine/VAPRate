@@ -1,5 +1,11 @@
-# Youtube Playback Speed
+# Video/Audio Playback Rate (VAPRate)
 
-YPS is a chrome extension that allows the user to change the blayback rate of videos (works also with audio elements) to go above the usual limit (which is 2). It works on youtube, facebook and all social media and beyond.
+VAPRate can change the playback rate of online audio/video elements and make it consistent across your tabs and windows. It can go above the usual limit which is 2x. It works on most websites including Youtube, Facebook, Twitter.
 
-![alt text](.github/screenshot.png "screenshot")
+![Screenshot](.github/screenshot.jpg "screenshot")
+
+### Keyboard Shortcuts
+
+- `Ctrl + Arrow up`: increase rate
+- `Ctrl + Arrow down`: decrease rate
+

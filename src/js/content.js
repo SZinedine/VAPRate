@@ -27,7 +27,7 @@ function stopInterval() {
  */
 function setRate(rate) {
     chrome.storage.sync.set({ "playbackRate": rate });
-    currentRate = currentRate;
+    currentRate = rate;
 }
 
 
